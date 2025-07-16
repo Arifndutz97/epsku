@@ -1,47 +1,59 @@
-// File: pages/reading/index.tsx
+// File: pages/to1/listening/index.tsx
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 const TOTAL_QUESTIONS = 20;
-const TIME_LIMIT = 25 * 60; // 25 minutes in seconds
+const TIME_PER_QUESTION = 75; // 75 seconds per question
 
-const dummyQuestions = Array.from({ length: TOTAL_QUESTIONS }, (_, i) => ({
-  id: i + 1,
-  question: `Ini adalah soal nomor ${i + 1}. Apa jawaban yang benar?`,
+const dummyListening = Array.from({ length: TOTAL_QUESTIONS }, (_, i) => ({
+  id: i + 21,
+  question: `Audio untuk soal nomor ${i + 21} diputar di sini. Apa jawabannya?`,
   options: ["A. Pilihan A", "B. Pilihan B", "C. Pilihan C", "D. Pilihan D"],
 }));
 
-export default function ReadingPage() {
+export default function ListeningPage() {
   const router = useRouter();
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
+  const [timeLeft, setTimeLeft] = useState(TIME_PER_QUESTION);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          alert("Waktu habis! Berpindah ke Listening...");
-          handleSubmit();
-          return 0;
+          autoNext();
+          return TIME_PER_QUESTION;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [currentIndex]);
+
+  const autoNext = () => {
+    if (currentIndex < TOTAL_QUESTIONS - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setTimeLeft(TIME_PER_QUESTION);
+    } else {
+      handleSubmit();
+    }
+  };
 
   const handleSelect = (choice: string) => {
-    setAnswers({ ...answers, [currentQuestion]: choice });
+    setAnswers({ ...answers, [dummyListening[currentIndex].id]: choice });
   };
 
   const handleSubmit = () => {
-    console.log("Jawaban Reading dikirim:", answers);
-    // Simpan jawaban ke localStorage sementara sebelum lanjut ke Listening
-    localStorage.setItem("readingAnswers", JSON.stringify(answers));
-    router.push("/listening");
+    console.log("Jawaban Listening:", answers);
+    localStorage.setItem("listeningAnswers", JSON.stringify(answers));
+
+    const reading = JSON.parse(localStorage.getItem("readingAnswers") || "{}");
+    const allAnswers = { ...reading, ...answers };
+    console.log("SEMUA JAWABAN:", allAnswers);
+    alert("Tryout selesai! Lihat hasil Anda di konsol.");
+    router.push("/to1/summary");
   };
 
   const formatTime = (seconds: number) => {
@@ -52,40 +64,26 @@ export default function ReadingPage() {
     return `${m}:${s}`;
   };
 
+  const current = dummyListening[currentIndex];
+
   return (
     <div className="max-w-3xl mx-auto p-4">
       <div className="flex justify-between mb-4">
-        <h1 className="text-xl font-bold">Reading Tryout EPS-TOPIK</h1>
+        <h1 className="text-xl font-bold">Listening Tryout EPS-TOPIK</h1>
         <div className="text-red-500 font-bold">Sisa Waktu: {formatTime(timeLeft)}</div>
       </div>
 
-      <div className="mb-4">
-        <div className="grid grid-cols-10 gap-2">
-          {dummyQuestions.map((q) => (
-            <button
-              key={q.id}
-              className={`p-2 border rounded ${
-                currentQuestion === q.id ? "bg-blue-500 text-white" : "bg-gray-100"
-              }`}
-              onClick={() => setCurrentQuestion(q.id)}
-            >
-              {q.id}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="mb-4 border p-4 rounded shadow">
-        <p className="font-medium">{dummyQuestions[currentQuestion - 1].question}</p>
+        <p className="font-medium">{current.question}</p>
         <ul className="mt-2 space-y-2">
-          {dummyQuestions[currentQuestion - 1].options.map((opt, i) => (
+          {current.options.map((opt, i) => (
             <li key={i}>
               <label className="inline-flex items-center">
                 <input
                   type="radio"
-                  name={`q-${currentQuestion}`}
+                  name={`q-${current.id}`}
                   value={opt}
-                  checked={answers[currentQuestion] === opt}
+                  checked={answers[current.id] === opt}
                   onChange={() => handleSelect(opt)}
                   className="mr-2"
                 />
@@ -97,10 +95,11 @@ export default function ReadingPage() {
       </div>
 
       <button
-        className="bg-green-600 text-white px-4 py-2 rounded shadow"
-        onClick={handleSubmit}
+        className="bg-blue-600 text-white px-4 py-2 rounded shadow"
+        onClick={autoNext}
+        disabled={currentIndex >= TOTAL_QUESTIONS - 1}
       >
-        Lanjut ke Listening
+        {currentIndex === TOTAL_QUESTIONS - 1 ? "Selesai" : "Soal Selanjutnya"}
       </button>
     </div>
   );
