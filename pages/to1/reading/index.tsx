@@ -1,6 +1,7 @@
 // File: pages/reading/index.tsx
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 const TOTAL_QUESTIONS = 20;
 const TIME_LIMIT = 25 * 60; // 25 minutes in seconds
@@ -12,6 +13,7 @@ const dummyQuestions = Array.from({ length: TOTAL_QUESTIONS }, (_, i) => ({
 }));
 
 export default function ReadingPage() {
+  const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
@@ -21,7 +23,7 @@ export default function ReadingPage() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          alert("Waktu habis! Jawaban akan dikirim.");
+          alert("Waktu habis! Berpindah ke Listening...");
           handleSubmit();
           return 0;
         }
@@ -36,8 +38,10 @@ export default function ReadingPage() {
   };
 
   const handleSubmit = () => {
-    console.log("Jawaban dikirim:", answers);
-    alert("Jawaban berhasil dikirim. Terima kasih!");
+    console.log("Jawaban Reading dikirim:", answers);
+    // Simpan jawaban ke localStorage sementara sebelum lanjut ke Listening
+    localStorage.setItem("readingAnswers", JSON.stringify(answers));
+    router.push("/listening");
   };
 
   const formatTime = (seconds: number) => {
@@ -96,9 +100,8 @@ export default function ReadingPage() {
         className="bg-green-600 text-white px-4 py-2 rounded shadow"
         onClick={handleSubmit}
       >
-        Selesai Tryout
+        Lanjut ke Listening
       </button>
     </div>
   );
 }
-
