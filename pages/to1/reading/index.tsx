@@ -38,8 +38,6 @@ export default function ReadingPage() {
   };
 
   const handleSubmit = () => {
-    console.log("Jawaban Reading dikirim:", answers);
-    // Simpan jawaban ke localStorage sementara sebelum lanjut ke Listening
     localStorage.setItem("readingAnswers", JSON.stringify(answers));
     router.push("/to1/listening");
   };
@@ -53,55 +51,89 @@ export default function ReadingPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <div className="flex justify-between mb-4">
-        <h1 className="text-xl font-bold">Reading Tryout EPS-TOPIK</h1>
-        <div className="text-red-500 font-bold">Sisa Waktu: {formatTime(timeLeft)}</div>
-      </div>
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-blue-700">📘 Reading Tryout EPS-TOPIK</h1>
+          <div className="text-lg text-red-600 font-semibold">
+            ⏰ Waktu: {formatTime(timeLeft)}
+          </div>
+        </div>
 
-      <div className="mb-4">
-        <div className="grid grid-cols-10 gap-2">
-          {dummyQuestions.map((q) => (
-            <button
-              key={q.id}
-              className={`p-2 border rounded ${
-                currentQuestion === q.id ? "bg-blue-500 text-white" : "bg-gray-100"
-              }`}
-              onClick={() => setCurrentQuestion(q.id)}
-            >
-              {q.id}
-            </button>
-          ))}
+        <div className="mb-6">
+          <div className="grid grid-cols-10 gap-2">
+            {dummyQuestions.map((q) => {
+              const isAnswered = answers[q.id] !== undefined;
+              const isActive = currentQuestion === q.id;
+              const baseClass =
+                "w-full aspect-square flex items-center justify-center rounded-lg text-sm font-semibold border";
+              const answeredClass = isAnswered ? "bg-green-500 text-white" : "bg-gray-100 text-gray-800";
+              const activeClass = isActive ? "ring-2 ring-blue-600 ring-offset-2" : "";
+              return (
+                <button
+                  key={q.id}
+                  className={`${baseClass} ${answeredClass} ${activeClass}`}
+                  onClick={() => setCurrentQuestion(q.id)}
+                >
+                  {q.id}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mb-6 p-6 border rounded-lg shadow-inner bg-blue-50">
+          <h2 className="text-lg font-semibold mb-4">
+            📝 Soal {currentQuestion}: {dummyQuestions[currentQuestion - 1].question}
+          </h2>
+          <ul className="space-y-3">
+            {dummyQuestions[currentQuestion - 1].options.map((opt, i) => (
+              <li key={i}>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name={`q-${currentQuestion}`}
+                    value={opt}
+                    checked={answers[currentQuestion] === opt}
+                    onChange={() => handleSelect(opt)}
+                    className="accent-blue-600 w-4 h-4"
+                  />
+                  <span className="text-gray-800">{opt}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            className="bg-green-600 hover:bg-green-700 transition text-white px-6 py-2 rounded-lg shadow-md"
+            onClick={handleSubmit}
+          >
+            🚀 Lanjut ke Listening
+          </button>
         </div>
       </div>
-
-      <div className="mb-4 border p-4 rounded shadow">
-        <p className="font-medium">{dummyQuestions[currentQuestion - 1].question}</p>
-        <ul className="mt-2 space-y-2">
-          {dummyQuestions[currentQuestion - 1].options.map((opt, i) => (
-            <li key={i}>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name={`q-${currentQuestion}`}
-                  value={opt}
-                  checked={answers[currentQuestion] === opt}
-                  onChange={() => handleSelect(opt)}
-                  className="mr-2"
-                />
-                {opt}
-              </label>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <button
-        className="bg-green-600 text-white px-4 py-2 rounded shadow"
-        onClick={handleSubmit}
-      >
-        Lanjut ke Listening
-      </button>
     </div>
   );
 }
+
+
+🚀 Sudah saya buatkan versi yang lebih rapi dan menarik untuk tampilan halaman Reading EPS-TOPIK kamu:
+
+✅ Layout bersih dengan latar putih dan shadow
+✅ Header ada ikon 📘 dan timer ⏰ yang menonjol
+✅ Soal aktif diberi efek ring
+✅ Soal terjawab tampil hijau
+✅ Kotak soal tampak modern dengan padding dan warna biru lembut
+✅ Tombol “Lanjut ke Listening” diberi animasi hover biar makin mantap!
+
+Kalau Mas Arif udah cocok, kita bisa lanjut:
+
+👉 Bikin halaman /to1/listening
+👉 Atau bikin halaman /to1/summary
+👉 Atau langsung deploy!
+
+Tinggal pilih, aku yang gas! ⚡
+
+            
