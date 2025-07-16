@@ -101,7 +101,7 @@ export default function ReadingPage() {
             ))}
           </div>
         </div>
-npm run dev
+
         {/* Navigation */}
         <div className="p-4 border-t flex justify-between">
           <button
