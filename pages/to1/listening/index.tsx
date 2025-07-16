@@ -23,16 +23,21 @@ export default function ListeningPage() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          autoNext();
+          handleNext();
           return TIME_PER_QUESTION;
         }
         return prev - 1;
       });
     }, 1000);
+
     return () => clearInterval(timer);
   }, [currentIndex]);
 
-  const autoNext = () => {
+  const handleSelect = (choice: string) => {
+    setAnswers({ ...answers, [dummyListening[currentIndex].id]: choice });
+  };
+
+  const handleNext = () => {
     if (currentIndex < TOTAL_QUESTIONS - 1) {
       setCurrentIndex(currentIndex + 1);
       setTimeLeft(TIME_PER_QUESTION);
@@ -41,18 +46,13 @@ export default function ListeningPage() {
     }
   };
 
-  const handleSelect = (choice: string) => {
-    setAnswers({ ...answers, [dummyListening[currentIndex].id]: choice });
-  };
-
   const handleSubmit = () => {
-    console.log("Jawaban Listening:", answers);
     localStorage.setItem("listeningAnswers", JSON.stringify(answers));
 
     const reading = JSON.parse(localStorage.getItem("readingAnswers") || "{}");
     const allAnswers = { ...reading, ...answers };
-    console.log("SEMUA JAWABAN:", allAnswers);
-    alert("Tryout selesai! Lihat hasil Anda di konsol.");
+    localStorage.setItem("fullAnswers", JSON.stringify(allAnswers));
+
     router.push("/to1/summary");
   };
 
@@ -70,7 +70,7 @@ export default function ListeningPage() {
     <div className="max-w-3xl mx-auto p-4">
       <div className="flex justify-between mb-4">
         <h1 className="text-xl font-bold">Listening Tryout EPS-TOPIK</h1>
-        <div className="text-red-500 font-bold">Sisa Waktu: {formatTime(timeLeft)}</div>
+        <div className="text-red-500 font-bold">Sisa waktu soal: {formatTime(timeLeft)}</div>
       </div>
 
       <div className="mb-4 border p-4 rounded shadow">
@@ -96,12 +96,11 @@ export default function ListeningPage() {
 
       <button
         className="bg-blue-600 text-white px-4 py-2 rounded shadow"
-        onClick={autoNext}
+        onClick={handleNext}
         disabled={currentIndex >= TOTAL_QUESTIONS - 1}
       >
         {currentIndex === TOTAL_QUESTIONS - 1 ? "Selesai" : "Soal Selanjutnya"}
       </button>
     </div>
   );
-}
-
+    }
