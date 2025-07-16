@@ -41,7 +41,7 @@ export default function ReadingPage() {
     console.log("Jawaban Reading dikirim:", answers);
     // Simpan jawaban ke localStorage sementara sebelum lanjut ke Listening
     localStorage.setItem("readingAnswers", JSON.stringify(answers));
-    router.push("/listening");
+    router.push("/to1/listening");
   };
 
   const formatTime = (seconds: number) => {
