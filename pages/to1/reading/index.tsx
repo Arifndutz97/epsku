@@ -1,16 +1,25 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function ReadingPage() {
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [answers, setAnswers] = useState({});
   const [timeLeft, setTimeLeft] = useState(1500); // 25 minutes in seconds
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          router.push("/listening");
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [router]);
 
   const handleAnswer = (questionNumber, choice) => {
     setAnswers({ ...answers, [questionNumber]: choice });
@@ -113,5 +122,5 @@ export default function ReadingPage() {
       </div>
     </div>
   );
-      }
-                
+                    }
+                  
