@@ -29,23 +29,34 @@ export default function ReadingPage() {
       {/* Sidebar */}
       <div className="w-1/5 bg-gray-100 p-4 border-r">
         <h2 className="text-lg font-semibold mb-2">Soal</h2>
-        <div className="grid grid-cols-4 gap-2">
-          {[...Array(totalQuestions)].map((_, i) => (
-            <button
-              key={i + 1}
-              className={`p-2 text-sm rounded font-semibold ${
-                currentQuestion === i + 1
-                  ? "bg-blue-500 text-white"
-                  : answers[i + 1]
-                  ? "bg-green-500 text-white"
-                  : "bg-white border text-gray-700"
-              }`}
-              onClick={() => setCurrentQuestion(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+        <table className="w-full table-fixed border-collapse">
+          <tbody>
+            {[0, 1, 2, 3, 4].map((row) => (
+              <tr key={row}>
+                {[1, 2, 3, 4].map((col) => {
+                  const number = row * 4 + col;
+                  if (number > totalQuestions) return <td key={col}></td>;
+                  return (
+                    <td key={col} className="p-1">
+                      <button
+                        className={`w-full p-2 text-sm rounded font-semibold ${
+                          currentQuestion === number
+                            ? "bg-blue-500 text-white"
+                            : answers[number]
+                            ? "bg-green-500 text-white"
+                            : "bg-white border text-gray-700"
+                        }`}
+                        onClick={() => setCurrentQuestion(number)}
+                      >
+                        {number}
+                      </button>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Main content */}
@@ -102,4 +113,5 @@ export default function ReadingPage() {
       </div>
     </div>
   );
-}
+      }
+                
